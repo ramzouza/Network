@@ -17,7 +17,7 @@ import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URI;
 
-import Network.*;
+import Client.*;
 
 class sample {
 

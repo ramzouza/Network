@@ -1,4 +1,4 @@
-package Builder;
+package Network.Builder;
 
 public class POSTRequestBuilder extends RequestBuilder {
    

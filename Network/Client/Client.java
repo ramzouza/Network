@@ -1,4 +1,4 @@
-package Network;
+package Network.Client;
 
 //Blocking Classes
 import java.net.Socket;
@@ -11,8 +11,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
-import Builder.*;
 
+import Network.Builder.*;
 
 import java.nio.ByteBuffer;
 import java.io.PrintWriter;
@@ -23,13 +23,13 @@ import java.net.URL;
 import java.net.URI;
 
 
-public class Network {
+public class Client {
 
 
     private RequestBuilder req;
     private String address;
 
-    Network(RequestBuilder newRequest, String newAddress) {
+    Client(RequestBuilder newRequest, String newAddress) {
         this.req = newRequest;
         this.address = newAddress;
     }
@@ -59,7 +59,7 @@ public class Network {
 
     public static void main(String[] args) {
         RequestBuilder post = new POSTRequestBuilder("GET ", "/status/418", "User-Agent: Hello", "");
-        Network net = new Network(post, "www.httpbin.org");
+        Client net = new Client(post, "www.httpbin.org");
         net.request();
     }
 

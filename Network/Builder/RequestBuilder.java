@@ -1,4 +1,4 @@
-package Builder;
+package Network.Builder;
 import Parsers.*;
 
 //Blocking Classes
@@ -28,7 +28,7 @@ final private String version = "HTTP/1.0";
 private String header = "";
 private String entityBody = "";
 
-    RequestBuilder(String method, String URL, String header, String entityBody){
+    protected RequestBuilder(String method, String URL, String header, String entityBody){
         this.method = method;
         this.URL = URL;
         this.header = header;
