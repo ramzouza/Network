@@ -1,4 +1,4 @@
-package Network;
+package Builder;
 
 public class GETRequestBuilder extends RequestBuilder  {
    
