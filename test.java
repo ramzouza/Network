@@ -17,6 +17,8 @@ import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URI;
 
+import Network.*;
+
 class test {
 
     public static void main(String[] args) {
@@ -26,8 +28,12 @@ class test {
              Socket sock = new Socket(web,80);
              PrintWriter out = new PrintWriter(sock.getOutputStream());
              Scanner in = new Scanner(sock.getInputStream());        
-     
-             out.write("GET /status/418 HTTP/1.0\r\nUser-Agent: Hello\r\n\r\n");
+             RequestBuilder post = new POSTRequestBuilder ("GET ","/status/418","User-Agent: Hello", "");
+             //out.write("GET /status/418 HTTP/1.0\r\nUser-Agent: Hello\r\n\r\n");
+             
+             System.out.println("GET /status/418 HTTP/1.0\r\nUser-Agent: Hello\r\n\r\n");
+             System.out.println(post.toString());
+             out.write(post.toString());
              out.flush();
      
              while(in.hasNextLine()) {
