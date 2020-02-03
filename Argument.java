@@ -1,5 +1,5 @@
 public class Argument {
-    public boolean verbose;
+    private boolean verbose;
 
     Argument (){
         this.verbose = false;
