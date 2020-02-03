@@ -1,25 +1,4 @@
 package Network.Builder;
-import Parsers.*;
-
-//Blocking Classes
-import java.net.Socket;
-import java.net.ServerSocket;
-
-//Non Blocking Classes
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.Scanner;
-import java.nio.ByteBuffer;
-import java.io.PrintWriter;
-//Misc Classes
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URL;
-import java.net.URI;
-
-
 
 public class RequestBuilder {
 private String method; 
