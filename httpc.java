@@ -1,6 +1,7 @@
 
 public class httpc {
 
+
     public String help (String temp){
         switch (temp) {
             case "":
@@ -15,16 +16,47 @@ public class httpc {
             "-h key:value Associates headers to HTTP Request with the format 'key:value'.";
                 
             default:
-                break;
+             return null;
         }
-        return null;
+    }
+        public static void main(String[] args) {
+        Argument arg = new Argument();    
+            for (int i = 0; i < args.length; i++) {
+                if (contains(args, "-v"))
+                {
+                    arg.setVerbose(true);
+                }
+            }
+            
+
+    
+    
+    
+    
+            httpc temp = new httpc();
+            temp.help("get");
+            System.out.println(temp.help("get"));
+        }
+        
+
+
+
+        public static Boolean contains(String [] arguments, String character)
+        {
+            for (String element : arguments) {
+                if (character.equals(element))
+                {
+                    return true; 
+                }
+            }
+            return false;
+        } 
+
+
     }
 
-public static void main(String[] args) {
-    httpc temp = new httpc();
-    temp.help("get");
-    System.out.println(temp.help("get"));
-}
 
 
-}
+
+
+
