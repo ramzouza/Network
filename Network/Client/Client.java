@@ -28,18 +28,18 @@ public class Client {
 
     private RequestBuilder req;
     private String address;
-    private Response res;
+    private static Response res;
 
     Client(RequestBuilder newRequest, String newAddress) {
         this.req = newRequest;
         this.address = newAddress;
     }
 
-
     public static void main(String[] args) {
         RequestBuilder post = new POSTRequestBuilder("GET ", "/status/418", "User-Agent: Hello", "");
         Client net = new Client(post, "www.httpbin.org");
         net.request();
+        System.out.println(res); 
     }
 
     public void request (){
@@ -69,8 +69,8 @@ public class Client {
         String entity = "";
         while ( in .hasNextLine()) {
         String temp = (String)in.nextLine();
-        
-        
+       
+      
         if (temp.equals(""))
         {
             temp = (String)in.nextLine();
@@ -88,13 +88,11 @@ public class Client {
             
         }
         else{
-            header += temp + "\r\n ";
+            header += temp + "\r\n";
         }
            
     }
    
-    System.out.println(header);
-    System.out.println(entity);
 }
 
     public void evaluateFirstline (String content)

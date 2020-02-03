@@ -18,7 +18,7 @@ public class Response {
     @Override
     public String toString() {
        
-        return super.toString();
+        return this.version + this.code + " " + this.phrase + "\r\n" +  this.header  + "\r\n" + entityBody ;
     }
 
     public String getVersion() {
