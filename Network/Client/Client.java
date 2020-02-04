@@ -67,9 +67,9 @@ public class Client {
         evaluateFirstline(in.nextLine());
         String header = "";
         String entity = "";
+
         while ( in .hasNextLine()) {
-        String temp = (String)in.nextLine();
-       
+        String temp = (String)in.nextLine();   
       
         if (temp.equals(""))
         {
@@ -80,10 +80,8 @@ public class Client {
                 
                 while ( in .hasNextLine()) {
                     entity += (String)in.nextLine() + "\r\n";
-               
                    }
                    res.setEntityBody(entity);
-
             }
             
         }
