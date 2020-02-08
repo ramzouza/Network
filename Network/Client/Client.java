@@ -30,21 +30,29 @@ public class Client {
     private String address;
     private static Response res;
 
-    Client(RequestBuilder newRequest, String newAddress) {
+    public Client(RequestBuilder newRequest, String newAddress) {
         this.req = newRequest;
         this.address = newAddress;
     }
 
     public static void main(String[] args) {
-        RequestBuilder post = new POSTRequestBuilder("GET ", "/status/418", "User-Agent: Hello", "");
+        RequestBuilder post = new POSTRequestBuilder("GET ", "/status/  418", "User-Agent: Hello", "");
         Client net = new Client(post, "www.httpbin.org");
         net.request();
         System.out.println(res); 
     }
 
+    public void run ()
+    {       
+        Client net = new Client(req, address);
+        net.request();
+        System.out.println(res); 
+    }
+
+
     public void request (){
       try{ 
-        InetAddress web = InetAddress.getByName(address);
+        InetAddress web = InetAddress.getByName(new URL(address).getHost());
         Socket sock = new Socket(web, 80);
         PrintWriter out = new PrintWriter(sock.getOutputStream());
         Scanner in = new Scanner(sock.getInputStream());
@@ -60,7 +68,6 @@ public class Client {
         System.out.println(e);
     }
 }
-
 
     public void buildResponse (Scanner in){
 
@@ -102,6 +109,14 @@ public class Client {
         }
 
         res = new Response(values[0], values[1], phrase, "", "");
+    }
+
+    public static Response getRes() {
+        return res;
+    }
+
+    public static void setRes(Response res) {
+        Client.res = res;
     }
 
 }
