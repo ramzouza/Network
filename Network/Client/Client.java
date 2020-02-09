@@ -80,17 +80,11 @@ public class Client {
       
         if (temp.equals(""))
         {
-            temp = (String)in.nextLine();
-            if (temp.equals(""))
-            {
                 res.setHeader(header);
-                
                 while ( in .hasNextLine()) {
                     entity += (String)in.nextLine() + "\r\n";
                    }
                    res.setEntityBody(entity);
-            }
-            
         }
         else{
             header += temp + "\r\n";
@@ -119,4 +113,5 @@ public class Client {
         Client.res = res;
     }
 
+    
 }

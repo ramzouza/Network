@@ -6,7 +6,7 @@ public class httpc {
     static Argument parameter = new Argument();
 
     public static void main(String[] args) {
-        args = new String[] { "GET", "http://httpbin.org/get?course=networking&assignment=1" };
+        args = new String[] { "POST","-h", "Content-Type:application/json" ,"http://httpbin.org/post?course=networking&assignment=1" };
 
         for (int i = 0; i < args.length; i++) {
             if (args[0].equals("help")) {
@@ -25,7 +25,13 @@ public class httpc {
         RequestBuilder req = new RequestBuilder(parameter.getRequestType(), parameter.getURL(), parameter.getHeader(), parameter.getBody());
         Client net = new Client(req, parameter.getURL());
         net.request();
-        System.out.println(net.getRes().toString());
+        
+        if (parameter.isVerbose()) {
+            System.out.println(net.getRes().verboseToString());    
+        }
+        else{
+            System.out.println(net.getRes().toString());            
+        }
 
     }
 
@@ -37,7 +43,6 @@ public class httpc {
         }
 
         setURL(args);
-        System.out.println(parameter.getURL());
         
         
 

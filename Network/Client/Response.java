@@ -15,11 +15,18 @@ public class Response {
         this.header = header;
         this.entityBody = entityBody;
     }
-    @Override
-    public String toString() {
+    
+    public String verboseToString() {
        
         return this.version + this.code + " " + this.phrase + "\r\n" +  this.header  + "\r\n" + entityBody ;
     }
+
+    @Override
+    public String toString() {
+       
+        return  entityBody ;
+    }
+
 
     public String getVersion() {
         return version;
