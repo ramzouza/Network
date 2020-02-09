@@ -14,6 +14,9 @@ protected String entityBody = "";
         this.entityBody = entityBody;
     }
 
+    public Boolean verifyRequest(){       
+        return true;
+    }
     @Override
     public String toString() {
         return this.method + this.URL + " " + this.version + "\r\n" +  this.header+ "\r\n";

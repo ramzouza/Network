@@ -7,7 +7,7 @@ public class POSTRequestBuilder extends RequestBuilder {
         
     }
 
-    Boolean verifyRequest(){
+   public Boolean verifyRequest(){
         
         // THIS MUST BE CODED
         return true;

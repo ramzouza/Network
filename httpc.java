@@ -10,7 +10,7 @@ public class httpc {
     static Argument parameter = new Argument();
 
     public static void main(String[] args) {
-       args = new String[] { "GET", "-d", "{Assignment: 1} ", "http://httpbin.org/get?course=networking&assignment=1" };
+      // args = new String[] { "POST", "-f", "testingFile.txt ", "-d", "{Assignment: 1} ", "http://httpbin.org/get?course=networking&assignment=1" };
         for (int i = 0; i < args.length; i++) {
             if (args[0].equals("help")) {
                 try {
@@ -22,10 +22,15 @@ public class httpc {
                 System.out.println(help(args[1]));
                 System.exit(0);
             }
-
+            
         }
         initArgument(args);
         RequestBuilder req = new RequestBuilder(parameter.getRequestType(), parameter.getURL(), parameter.getHeader(), parameter.getBody());
+        if (!req.verifyRequest())
+        {
+            System.exit(0);
+        }
+
         Client net = new Client(req, parameter.getURL());
         net.request();
         
@@ -66,6 +71,7 @@ public class httpc {
             System.out.println(" GET Request cannot be used with a file or inline data");
             System.exit(0);
         }
+        
 
     }
 

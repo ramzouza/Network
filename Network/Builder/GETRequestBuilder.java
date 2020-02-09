@@ -7,7 +7,7 @@ public class GETRequestBuilder extends RequestBuilder  {
         // TODO Auto-generated constructor stub
     }
 
-    Boolean verifyRequest(){
+    public Boolean verifyRequest(){
         
         // THIS MUST BE CODED
         // write hosr the error, 
