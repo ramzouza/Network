@@ -28,7 +28,7 @@ class sample {
              Socket sock = new Socket(web,80);
              PrintWriter out = new PrintWriter(sock.getOutputStream());
              Scanner in = new Scanner(sock.getInputStream());        
-             out.write("GET /status/418 HTTP/1.0\r\nUser-Agent: Hello\r\n\r\n");
+             out.write(" GET  HTTP/1.0\r\nUser-Agent: Hello\r\n\r\n");
              out.flush();
      
              while(in.hasNextLine()) {

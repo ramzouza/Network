@@ -53,10 +53,13 @@ public class Client {
     public void request (){
       try{ 
         InetAddress web = InetAddress.getByName(new URL(address).getHost());
+        String temp2 = new URL(address).getHost();
         Socket sock = new Socket(web, 80);
         PrintWriter out = new PrintWriter(sock.getOutputStream());
         Scanner in = new Scanner(sock.getInputStream());
-        out.write(req.toString());
+        System.out.println(req.toString());
+        String temp = req.toString();
+         out.write(req.toString());
         out.flush();
 
         buildResponse(in);

@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import Network.Builder.RequestBuilder;
 import Network.Client.Client;
 
@@ -6,8 +10,7 @@ public class httpc {
     static Argument parameter = new Argument();
 
     public static void main(String[] args) {
-        args = new String[] { "POST","-h", "Content-Type:application/json" ,"http://httpbin.org/post?course=networking&assignment=1" };
-
+       args = new String[] { "GET", "-d", "{Assignment: 1} ", "http://httpbin.org/get?course=networking&assignment=1" };
         for (int i = 0; i < args.length; i++) {
             if (args[0].equals("help")) {
                 try {
@@ -36,15 +39,33 @@ public class httpc {
     }
 
     public static void initArgument(String[] args) {
-        setHeaders(args);
-        System.out.println(parameter.getHeader());
+        setURL(args);
+      
         if (contains(args, "-v")) {
             parameter.setVerbose(true);
         }
+        if(contains(args,"-h")){
+            setHeaders(args);
+        }
+        if(contains(args, "-d")){
+            parameter.setData(true);
+            setBodyD(args);
+        }
+        if (contains(args, "-f")){
+            parameter.setFile(true);
+            setBodyF(args);
+        }
 
-        setURL(args);
-        
-        
+        if (parameter.isData() && parameter.isFile())
+        {
+            System.out.println("Request is not appropriate contains both a file and inline data");
+            System.exit(0);
+        }
+        if(parameter.getRequestType().equals("GET ") && (parameter.isData() || parameter.isFile()))
+        {            
+            System.out.println(" GET Request cannot be used with a file or inline data");
+            System.exit(0);
+        }
 
     }
 
@@ -81,21 +102,65 @@ public class httpc {
         return false;
     }
 
-    public static void setHeaders(String[] arguments)
-    {
+    public static void setHeaders(String[] arguments) {
         for (int i = 0; i < arguments.length; i++) {
-            if (arguments [i].equalsIgnoreCase("-h")){
-                parameter.addHeader(arguments[i+1 ] + "\r\n");
+            if (arguments[i].equalsIgnoreCase("-h")) {
+                parameter.addHeader(arguments[i + 1] + "\r\n");
             }
         }
     }
 
-    public static void setURL(String[] arguments)
-    {
+    public static void setURL(String[] arguments) {
         parameter.setRequestType(arguments[0] + " ");
-        parameter.setURL(arguments[arguments.length-1]);
+        parameter.setURL(arguments[arguments.length - 1]);
     }
+
+    public static void setBodyD(String[] arguments)
+    {
+        String data = "";
+        StringBuilder builder = new StringBuilder();
+        for (String value : arguments) {
+            builder.append(value);
+        }
+
+        String body = builder.toString().replaceAll("([A-Za-z]\\w+)", "\"$1\"");
+        int startIndex = body.indexOf("{");
+        int lastIndex = body.lastIndexOf("}");
+
+        parameter.setBody(body.substring(startIndex +1, lastIndex)); 
     }
+
+    public static void setBodyF(String[] arguments)  
+    {
+        int index=0;
+        for (int i = 0; i < arguments.length; i++) {
+            if(arguments[i] == "-f")
+            {
+                index = i+1;
+            }
+        }
+        try {
+            // pass the path to the file as a parameter 
+            File file = new File("C:\\Github\\Network\\"+ arguments[index]); 
+            Scanner sc = new Scanner(file); 
+            String temp="";
+
+            while (sc.hasNextLine()) {
+                temp += sc.nextLine();               
+            }
+            parameter.setBody(temp);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            System.out.println("The file given does not exist");
+            System.exit(0); 
+        }
+  
+
+
+    }
+    
+
+}
 
 
 

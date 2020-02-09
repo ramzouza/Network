@@ -6,8 +6,8 @@ public class Argument {
     private boolean verbose;
     private String requestType;
     private String header;
-    private String data;
-    private String file;
+    private boolean data;
+    private boolean file;
     private String URL;
     private String body;
    
@@ -16,20 +16,9 @@ public class Argument {
         this.requestType = "";
         this.URL = "";
         this.header = "";
-        this.data = "";
-        this.file = "";
+        this.data = false;
+        this.file = false;
            }
-
-    Argument(boolean v, String type, String url, String h, String d, String f ) {
-        this.verbose = v;
-        this.requestType = type;
-        this.URL = url;
-        this.header = h;
-        this.data = d;
-        this.file = f;
-        
-    }
-
    
     public boolean isVerbose() {
         return verbose;
@@ -55,21 +44,7 @@ public class Argument {
         this.header += header;
     }
 
-    public String getData() {
-        return data;
-    }
 
-    public void setData(String data) {
-        this.data = data;
-    }
-
-    public String getFile() {
-        return file;
-    }
-
-    public void setFile(String file) {
-        this.file = file;
-    }
 
     public String getURL() {
         return URL;
@@ -85,6 +60,22 @@ public class Argument {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public boolean isData() {
+        return data;
+    }
+
+    public void setData(boolean data) {
+        this.data = data;
+    }
+
+    public boolean isFile() {
+        return file;
+    }
+
+    public void setFile(boolean file) {
+        this.file = file;
     }
 
 }
