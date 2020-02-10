@@ -7,6 +7,8 @@ protected final String version = "HTTP/1.0";
 protected String header = "";
 protected String entityBody = "";
 
+    public RequestBuilder() {
+    }
     public RequestBuilder(String method, String URL, String header, String entityBody){
         this.method = method;
         this.URL = URL;
@@ -14,14 +16,13 @@ protected String entityBody = "";
         this.entityBody = entityBody;
     }
 
-    public Boolean verifyRequest(){       
+	public Boolean verifyRequest(){       
         return true;
     }
     @Override
     public String toString() {
         return this.method + this.URL + " " + this.version + "\r\n" +  this.header+ "\r\n" + this.entityBody;
     }
-
 
     public void setURL(String uRL) {
         URL = uRL;

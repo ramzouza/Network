@@ -15,6 +15,6 @@ public class POSTRequestBuilder extends RequestBuilder {
 
     @Override
     public String toString() {
-        return this.method + this.URL + " " + this.version + "\r\n" +  this.header+ "\r\n" + this.entityBody;
+        return this.method + this.URL + " " + this.version + "\r\n" +  this.header+ "Content-Length: " +entityBody.length() +"\r\n\r\n" + this.entityBody;
     }
 }

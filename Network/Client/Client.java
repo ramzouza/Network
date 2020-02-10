@@ -52,18 +52,17 @@ public class Client {
 
     public void request (){
       try{ 
-        InetAddress web = InetAddress.getByName(new URL(address).getHost());
-       /*
-        if (!web.isReachable(0));
-        {
+          InetAddress web = null;
+          try {
+            web = InetAddress.getByName(new URL(address).getHost());
+          } catch (Exception e) {
             System.out.println("URL provided is not reachable by the Network library, request cancelled");
             System.exit(0);
-        }
-       */ 
+          }
+     
         Socket sock = new Socket(web, 80);
         PrintWriter out = new PrintWriter(sock.getOutputStream());
         Scanner in = new Scanner(sock.getInputStream());
-        //System.out.println(req.toString());
         out.write(req.toString());
         out.flush();
 

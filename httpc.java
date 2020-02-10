@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+import Network.Builder.GETRequestBuilder;
+import Network.Builder.POSTRequestBuilder;
 import Network.Builder.RequestBuilder;
 import Network.Client.Client;
 
@@ -13,11 +15,12 @@ public class httpc {
     static Argument parameter = new Argument();
 
     public static void main(String[] args) {     
-         args = new String[] { "POST" , "-v", "-h", "Content-Type:application/json", "-d", "{\"Assignment\": 1}" ,"http://httpbin.org/post"};
+       //args = new String[] { "POST" , "-h", "Content-Type:application/json", "-f", "file1.txt" ,"http://httpbin.org/post"};
         for (int i = 0; i < args.length; i++) {
             if (args[0].equals("help")) {
                 try {
                     args[1] = args[1];
+
                 } catch (Exception e) {
                     System.out.println(help(""));
                     System.exit(0);
@@ -28,12 +31,22 @@ public class httpc {
 
         }
         initArgument(args);
-        RequestBuilder req = new RequestBuilder(parameter.getRequestType(), parameter.getURL(), parameter.getHeader(),
-                parameter.getBody());
-        if (!req.verifyRequest()) {
+        RequestBuilder req = new RequestBuilder();
+        if(parameter.getRequestType().equals("GET "))
+        {
+             req = new GETRequestBuilder(parameter.getRequestType(), parameter.getURL(), parameter.getHeader(),parameter.getBody());
+        }
+        else if (parameter.getRequestType().equals("POST "))
+        {
+             req = new POSTRequestBuilder(parameter.getRequestType(), parameter.getURL(), parameter.getHeader(),parameter.getBody());
+        }
+        else 
+        {
+            System.out.println("The request Type is not accepted");
+            System.out.println(help(""));
             System.exit(0);
         }
-
+      
         Client net = new Client(req, parameter.getURL());
         net.request();
 
@@ -44,7 +57,8 @@ public class httpc {
 
         if (parameter.isVerbose()) {
             System.out.println(net.getRes().verboseToString());
-        } else {
+        } 
+        else {
             System.out.println(net.getRes().toString());
         }
 
@@ -99,7 +113,7 @@ public class httpc {
                     + "Post executes a HTTP POST request for a given URL with inline data or from file. \n"
                     + "-v Prints the detail of the response such as protocol, status and headers. \n"
                     + "-h key:value Associates headers to HTTP Request with the format 'key:value'.\n"
-                    + "-d string Associates an inline data to the body HTTP POST request. -f file Associates the content of a file to the body HTTP POST request.\n"
+                    + "-d string Associates an inline data to the body HTTP POST request.\n -f file Associates the content of a file to the body HTTP POST request.\n"
                     + "Either [-d] or [-f] can be used but not both.";
         default:
             return " The help you are trying to get does not exist";
@@ -132,7 +146,7 @@ public class httpc {
 
         }
 
-        parameter.setRequestType(arguments[0] + " ");
+        parameter.setRequestType(arguments[0].toUpperCase() + " ");
     }
 
     public static void setBodyD(String[] arguments) {
@@ -142,19 +156,19 @@ public class httpc {
             builder.append(value);
         }
 
-        String body = builder.toString().replaceAll("([A-Za-z]\\w+)", "\"$1\"");
-        int startIndex = body.indexOf("{");
-        int lastIndex = body.lastIndexOf("}");
-
-        parameter.setBody(body.substring(startIndex + 1, lastIndex));
+       // String body = builder.toString().replaceAll("([A-Za-z]\\w+)", "\"$1\"");
+        int startIndex = builder.indexOf("{");
+        int lastIndex = builder.lastIndexOf("}");
+        parameter.setBody(builder.substring(startIndex, lastIndex+1));
     }
 
     public static void setBodyF(String[] arguments) {
         int index = 0;
         for (int i = 0; i < arguments.length; i++) {
-            if (arguments[i] == "-f") {
+            if (arguments[i].equals("-f")) {
                 index = i + 1;
-            }
+                break;
+            }          
         }
         try {
             // pass the path to the file as a parameter
@@ -168,6 +182,7 @@ public class httpc {
             parameter.setBody(temp);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
+            System.out.println(e);
             System.out.println("The file given does not exist");
             System.exit(0);
         }
