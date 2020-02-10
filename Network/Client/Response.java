@@ -51,6 +51,14 @@ public class Response {
     public void setEntityBody(String entityBody) {
         this.entityBody = entityBody;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
     
 
 

@@ -2,15 +2,17 @@ import java.lang.module.ModuleDescriptor.Builder;
 
 import Network.Builder.*;
 
+
 public class Argument {
-    private boolean verbose;
     private String requestType;
     private String header;
-    private boolean data;
-    private boolean file;
     private String URL;
     private String body;
-   
+    private boolean verbose;
+    private boolean data;
+    private boolean file;
+    private boolean outputToFile;    
+
     Argument() {
         this.verbose = false;
         this.requestType = "";
@@ -18,6 +20,7 @@ public class Argument {
         this.header = "";
         this.data = false;
         this.file = false;
+        this.outputToFile = false;  
            }
    
     public boolean isVerbose() {
@@ -76,6 +79,14 @@ public class Argument {
 
     public void setFile(boolean file) {
         this.file = file;
+    }
+
+    public boolean isOutputToFile() {
+        return outputToFile;
+    }
+
+    public void setOutputToFile(boolean outputToFile) {
+        this.outputToFile = outputToFile;
     }
 
 }

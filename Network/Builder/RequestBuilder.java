@@ -19,7 +19,12 @@ protected String entityBody = "";
     }
     @Override
     public String toString() {
-        return this.method + this.URL + " " + this.version + "\r\n" +  this.header+ "\r\n";
+        return this.method + this.URL + " " + this.version + "\r\n" +  this.header+ "\r\n" + this.entityBody;
+    }
+
+
+    public void setURL(String uRL) {
+        URL = uRL;
     }
 
 

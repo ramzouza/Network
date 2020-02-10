@@ -53,19 +53,24 @@ public class Client {
     public void request (){
       try{ 
         InetAddress web = InetAddress.getByName(new URL(address).getHost());
-        String temp2 = new URL(address).getHost();
+       /*
+        if (!web.isReachable(0));
+        {
+            System.out.println("URL provided is not reachable by the Network library, request cancelled");
+            System.exit(0);
+        }
+       */ 
         Socket sock = new Socket(web, 80);
         PrintWriter out = new PrintWriter(sock.getOutputStream());
         Scanner in = new Scanner(sock.getInputStream());
-        System.out.println(req.toString());
-        String temp = req.toString();
-         out.write(req.toString());
+        //System.out.println(req.toString());
+        out.write(req.toString());
         out.flush();
 
-        buildResponse(in);
-        
+        buildResponse(in);        
         out.close(); in .close();
         sock.close();
+        redirect();
         } 
     catch (Exception e) {
         System.out.println(e);
@@ -116,5 +121,23 @@ public class Client {
         Client.res = res;
     }
 
+    public void redirect() {
+        if (res.getCode().matches("3\\d?\\d?")){
+            String headers = res.getHeader();          
+            String[] parts =  headers.split("\r\n");
+             
+            for (String string : parts) {
+                if (string.contains("Location"))
+                {
+                    String [] redirectAddress = string.split(": ");
+                    this.address = redirectAddress[1];
+                    req.setURL(this.address);
+                }
+            }
+           // System.out.println(this.res.verboseToString());
+            this.request();
+           
+        }
+    }
     
 }

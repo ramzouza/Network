@@ -1,16 +1,19 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 import Network.Builder.RequestBuilder;
 import Network.Client.Client;
 
 public class httpc {
-   
+
     static Argument parameter = new Argument();
 
-    public static void main(String[] args) {
-      // args = new String[] { "POST", "-f", "testingFile.txt ", "-d", "{Assignment: 1} ", "http://httpbin.org/get?course=networking&assignment=1" };
+    public static void main(String[] args) {     
+         args = new String[] { "POST" , "-v", "-h", "Content-Type:application/json", "-d", "{\"Assignment\": 1}" ,"http://httpbin.org/post"};
         for (int i = 0; i < args.length; i++) {
             if (args[0].equals("help")) {
                 try {
@@ -22,56 +25,60 @@ public class httpc {
                 System.out.println(help(args[1]));
                 System.exit(0);
             }
-            
+
         }
         initArgument(args);
-        RequestBuilder req = new RequestBuilder(parameter.getRequestType(), parameter.getURL(), parameter.getHeader(), parameter.getBody());
-        if (!req.verifyRequest())
-        {
+        RequestBuilder req = new RequestBuilder(parameter.getRequestType(), parameter.getURL(), parameter.getHeader(),
+                parameter.getBody());
+        if (!req.verifyRequest()) {
             System.exit(0);
         }
 
         Client net = new Client(req, parameter.getURL());
         net.request();
-        
-        if (parameter.isVerbose()) {
-            System.out.println(net.getRes().verboseToString());    
+
+        if (parameter.isOutputToFile()) {
+            outputToFile(net,args[args.length-1],parameter.isVerbose());
+            System.exit(0);
         }
-        else{
-            System.out.println(net.getRes().toString());            
+
+        if (parameter.isVerbose()) {
+            System.out.println(net.getRes().verboseToString());
+        } else {
+            System.out.println(net.getRes().toString());
         }
 
     }
 
-    public static void initArgument(String[] args) {
-        setURL(args);
-      
+    public static void initArgument(String[] args) {        
+
         if (contains(args, "-v")) {
             parameter.setVerbose(true);
         }
-        if(contains(args,"-h")){
+        if (contains(args, "-h")) {
             setHeaders(args);
         }
-        if(contains(args, "-d")){
+        if (contains(args, "-d")) {
             parameter.setData(true);
             setBodyD(args);
         }
-        if (contains(args, "-f")){
+        if (contains(args, "-f")) {
             parameter.setFile(true);
             setBodyF(args);
         }
+        if (args[args.length - 2].equals("-o")) {
+            parameter.setOutputToFile(true);            
+        }
+        setURL(args);
 
-        if (parameter.isData() && parameter.isFile())
-        {
+        if (parameter.isData() && parameter.isFile()) {
             System.out.println("Request is not appropriate contains both a file and inline data");
             System.exit(0);
         }
-        if(parameter.getRequestType().equals("GET ") && (parameter.isData() || parameter.isFile()))
-        {            
+        if (parameter.getRequestType().equals("GET ") && (parameter.isData() || parameter.isFile())) {
             System.out.println(" GET Request cannot be used with a file or inline data");
             System.exit(0);
         }
-        
 
     }
 
@@ -117,12 +124,18 @@ public class httpc {
     }
 
     public static void setURL(String[] arguments) {
+
+        if (parameter.isOutputToFile()) {
+            parameter.setURL(arguments[arguments.length - 3]);
+        } else {
+            parameter.setURL(arguments[arguments.length - 1]);
+
+        }
+
         parameter.setRequestType(arguments[0] + " ");
-        parameter.setURL(arguments[arguments.length - 1]);
     }
 
-    public static void setBodyD(String[] arguments)
-    {
+    public static void setBodyD(String[] arguments) {
         String data = "";
         StringBuilder builder = new StringBuilder();
         for (String value : arguments) {
@@ -133,38 +146,51 @@ public class httpc {
         int startIndex = body.indexOf("{");
         int lastIndex = body.lastIndexOf("}");
 
-        parameter.setBody(body.substring(startIndex +1, lastIndex)); 
+        parameter.setBody(body.substring(startIndex + 1, lastIndex));
     }
 
-    public static void setBodyF(String[] arguments)  
-    {
-        int index=0;
+    public static void setBodyF(String[] arguments) {
+        int index = 0;
         for (int i = 0; i < arguments.length; i++) {
-            if(arguments[i] == "-f")
-            {
-                index = i+1;
+            if (arguments[i] == "-f") {
+                index = i + 1;
             }
         }
         try {
-            // pass the path to the file as a parameter 
-            File file = new File("C:\\Github\\Network\\"+ arguments[index]); 
-            Scanner sc = new Scanner(file); 
-            String temp="";
+            // pass the path to the file as a parameter
+            File file = new File("C:\\Github\\Network\\" + arguments[index]);
+            Scanner sc = new Scanner(file);
+            String temp = "";
 
             while (sc.hasNextLine()) {
-                temp += sc.nextLine();               
+                temp += sc.nextLine();
             }
             parameter.setBody(temp);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             System.out.println("The file given does not exist");
-            System.exit(0); 
+            System.exit(0);
         }
-  
-
 
     }
+
+    public static void outputToFile(Client net, String outputFile, Boolean verbose) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Github\\Network\\"+outputFile));
+            if(verbose)
+            {
+                writer.write(net.getRes().verboseToString());
+            }
+            else {
+                writer.write(net.getRes().toString());
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Writing output to file has failed");
+        }
+    }
     
+
 
 }
 
