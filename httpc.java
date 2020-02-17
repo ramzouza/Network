@@ -150,18 +150,12 @@ public class httpc {
     }
 
     public static void setBodyD(String[] arguments) {
-        String data = "";
-        StringBuilder builder = new StringBuilder();
-        for (String value : arguments) {
-            builder.append(value);
+        for (int i = 0; i < arguments.length; i++) {
+            if (arguments[i].equalsIgnoreCase("-d")) {
+                parameter.setBody(arguments[i + 1]);
+            }
         }
-
-       // String body = builder.toString().replaceAll("([A-Za-z]\\w+)", "\"$1\"");
-        int startIndex = builder.indexOf("{");
-        int lastIndex = builder.lastIndexOf("}");
-        parameter.setBody(builder.substring(startIndex, lastIndex+1));
     }
-
     public static void setBodyF(String[] arguments) {
         int index = 0;
         for (int i = 0; i < arguments.length; i++) {
