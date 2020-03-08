@@ -15,7 +15,7 @@ public class httpc {
     static Argument parameter = new Argument();
 
     public static void main(String[] args) {     
-       //args = new String[] { "POST" , "-h", "Content-Type:application/json", "-f", "file1.txt" ,"http://httpbin.org/post"};
+       args = new String[] { "GET" , "http://localhost:8080/hey/my/name/is/bob.txt"};
         for (int i = 0; i < args.length; i++) {
             if (args[0].equals("help")) {
                 try {
@@ -31,14 +31,14 @@ public class httpc {
 
         }
         initArgument(args);
-        RequestBuilder req = new RequestBuilder();
+        RequestBuilder req = null;
         if(parameter.getRequestType().equals("GET "))
         {
-             req = new GETRequestBuilder(parameter.getRequestType(), parameter.getURL(), parameter.getHeader(),parameter.getBody());
+             req = new GETRequestBuilder(parameter.getURL(), parameter.getHeader(),parameter.getBody());
         }
         else if (parameter.getRequestType().equals("POST "))
         {
-             req = new POSTRequestBuilder(parameter.getRequestType(), parameter.getURL(), parameter.getHeader(),parameter.getBody());
+             req = new POSTRequestBuilder(parameter.getURL(), parameter.getHeader(),parameter.getBody());
         }
         else 
         {

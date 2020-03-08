@@ -7,9 +7,15 @@ public class POSTRequestBuilder extends RequestBuilder {
     public POSTRequestBuilder() {}
 
     
-    public POSTRequestBuilder(String method, String URL, String header, String entityBody) {
-        super(method, URL, header, entityBody);
+    public POSTRequestBuilder(String URL, String header, String entityBody) {
+        super(URL, header, entityBody);
         
+    }
+
+@Override
+    public String getMethod()
+    {
+        return "POST";
     }
 
 
@@ -21,8 +27,8 @@ public Boolean verifyRequest(){
 
     @Override
     public String toString() {
-        return this.method + this.URL + " " + this.version + "\r\n" +  this.header+ "Content-Length: " +entityBody.length() +"\r\n\r\n" + this.entityBody;
-    }
+        return "POST " + this.URL + " " + this.version + "\r\n" +  this.header+ "Content-Length: " +entityBody.length() +"\r\n\r\n" + this.entityBody;
+    } 
     @Override
     public void buildRequest(Scanner in){
        

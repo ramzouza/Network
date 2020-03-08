@@ -7,11 +7,17 @@ public class GETRequestBuilder extends RequestBuilder {
     public GETRequestBuilder() {}
 
 
-
-   public GETRequestBuilder(String method, String URL, String header, String entityBody) {
-        super(method, URL, header, entityBody);
+   public GETRequestBuilder(String URL, String header, String entityBody) {
+        super(URL, header, entityBody);
         // TODO Auto-generated constructor stub
     }
+ 
+    @Override
+    public String getMethod()
+    {
+        return "GET";
+    }
+
     @Override
     public void buildRequest(Scanner in){
        

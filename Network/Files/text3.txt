@@ -1,0 +1,9 @@
+TEXT 3
+
+400 : Bad Request 
+-- Server doesn't understand the request.
+-- For example, if the request doesn't follow proper syntax or is malformed.
+
+403 : Forbidden 
+-- Server understood the request, but refuses to 'service' it. 
+-- For example, if the file has it's permissions set to not Readable/Writeable

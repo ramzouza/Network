@@ -22,18 +22,15 @@ import java.io.PrintWriter;
 public class Server {
 
 	private int port = 8080;
-	private String path; 
 	private ServerSocket server= null;
 	private static Socket socket;
 	static InputStreamReader inputReader;
 	static BufferedReader br;
 	static PrintWriter PrintWriter;
 	private String requestType;
-	static RequestBuilder req;
 
 	public Server(int newPort, String newPath) {
 		this.port = newPort;
-		this.path = newPath;
 	}
 
 	public void initSocket() {
@@ -80,69 +77,15 @@ public class Server {
 		}
 	}
 
-	public void accept() {
+	public Socket accept() {
 		try {
-			socket = server.accept();
+			return server.accept();
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+
+		return null;
 	}
-
-	public static void main(String[] args) {
-		Server newServer = new Server(8080, "localhost");
-		newServer.initSocket();
-		newServer.accept();
-		System.out.println("client connected");
-		String info = "";
-		try {
-			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			Scanner in = new Scanner(socket.getInputStream());
-
-			// while ( in .hasNextLine()) {
-			// info +=in.nextLine() +"\n";
-			// System.out.println("-----------------");
-			// System.out.println(info);
-			// }
-			evaluateFirstline(in.nextLine());
-			req.buildRequest(in);
-			System.out.println(req.toString()); 
-
-			System.out.println("did I crash");
-		} catch (Exception e) {
-			System.out.println(e);
-			// TODO: handle exception
-		}
-
-	}
-
-	public void clientRequest(String request, Scanner in) {
-
-		if (requestType.equals("GET ")) {
-			req = new GETRequestBuilder();
-			req.setMethod("GET ");
-		} else if (requestType.equals("POST ")) {
-			req = new POSTRequestBuilder();
-			req.setMethod("POST ");
-		} else {
-			System.out.println("The request Type is not accepted");
-			System.exit(0);
-		}
-
-	}
-
-	public static void evaluateFirstline(String content) {
-		String[] values = content.split(" ");
-		
-		if (values[0].equals("GET")) {
-			req = new GETRequestBuilder();
-		}   
-	   else if(values[0].equals("POST")){
-	   req = new POSTRequestBuilder();
-	   }
-	   req.setURL(values[1]);
-	   req.setVersion(values[2]);
-	   req.setMethod(values[0] + " ");        
-    }
 
 	public static Socket getSocket() {
 		return socket;
@@ -151,11 +94,5 @@ public class Server {
 	public static void setSocket(Socket socket) {
 		Server.socket = socket;
 	}
-
-	public static RequestBuilder getReq() {
-		return req;
-	}
-
-
 
 }

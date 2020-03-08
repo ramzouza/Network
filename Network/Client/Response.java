@@ -7,6 +7,12 @@ public class Response {
     private String header;
     private String entityBody;
 
+    public Response(String version){
+        this.version = version;
+        this.entityBody = "";
+        this.phrase = "";
+        this.header = "";
+    }
     
     public Response(String version, String code, String phrase, String header, String entityBody) {
         this.version = version;
@@ -18,7 +24,7 @@ public class Response {
     
     public String verboseToString() {
        
-        return this.version + this.code + " " + this.phrase + "\r\n" +  this.header  + "\r\n" + entityBody ;
+        return this.version + " " + this.code + " " + this.phrase + "\r\n" +  this.header  + "\r\n" + entityBody ;
     }
 
     @Override
@@ -52,6 +58,10 @@ public class Response {
         this.entityBody = entityBody;
     }
 
+    public void appendEntityBody(String entityBody) {
+        this.entityBody += entityBody;
+    }
+
     public String getCode() {
         return code;
     }
@@ -59,8 +69,12 @@ public class Response {
     public void setCode(String code) {
         this.code = code;
     }
-    
 
+    public String getPhrase() {
+        return phrase;
+    }
 
-
+    public void setPhrase(String phrase) {
+        this.phrase = phrase;
+    }
 }

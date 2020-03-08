@@ -35,32 +35,26 @@ public class Client {
         this.address = newAddress;
     }
 
-    public static void main(String[] args) {
-        RequestBuilder post = new POSTRequestBuilder("GET ", "/status/  418", "User-Agent: Hello", "");
-        Client net = new Client(post, "www.httpbin.org");
-        net.request();
-        System.out.println(res); 
-    }
-
-    public void run ()
-    {       
-        Client net = new Client(req, address);
-        net.request();
-        System.out.println(res); 
-    }
-
-
     public void request (){
       try{ 
           InetAddress web = null;
+          int port = 0;
           try {
-            web = InetAddress.getByName(new URL(address).getHost());
+            URL url = new URL(address);
+            web = InetAddress.getByName(url.getHost());
+            port = url.getPort();
+
           } catch (Exception e) {
             System.out.println("URL provided is not reachable by the Network library, request cancelled");
             System.exit(0);
           }
      
-        Socket sock = new Socket(web, 80);
+          if (port == 0)
+          {
+              port = 80;
+          }
+
+        Socket sock = new Socket(web, port);
         PrintWriter out = new PrintWriter(sock.getOutputStream());
         Scanner in = new Scanner(sock.getInputStream());
         out.write(req.toString());
@@ -78,7 +72,10 @@ public class Client {
 
     public void buildResponse (Scanner in){
 
-        evaluateFirstline(in.nextLine());
+        if(in.hasNext() && in.hasNextLine())
+        {
+            evaluateFirstline(in.nextLine());
+        }
         String header = "";
         String entity = "";
 
@@ -89,7 +86,8 @@ public class Client {
         {
                 res.setHeader(header);
                 while ( in .hasNextLine()) {
-                    entity += (String)in.nextLine() + "\r\n";
+                    return;
+                   // entity += (String)in.nextLine() + "\r\n";
                    }
                    res.setEntityBody(entity);
         }
@@ -105,8 +103,13 @@ public class Client {
     {
         String [] values = content.split(" ");
         String phrase = "";
-        for (int i = 2; i < values.length; i++) {
-            phrase += values[i] + " ";
+        if (values.length > 2)
+        {
+            phrase = values[2];
+        }
+
+        for (int i = 3; i < values.length; i++) {
+            phrase += " " + values[i];
         }
 
         res = new Response(values[0], values[1], phrase, "", "");
