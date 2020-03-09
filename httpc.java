@@ -189,7 +189,7 @@ for (int i = 0; i < args.length; i++) {
             BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Github\\Network\\"+outputFile));
             if(verbose)
             {
-                writer.write(net.getRes().verboseToString());
+                writer.write(net.getRes().verboseToString(false));
             }
             else {
                 writer.write(net.getRes().toString());

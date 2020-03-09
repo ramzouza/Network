@@ -29,9 +29,9 @@ public class Response {
         this.entityBody = entityBody;
     }
     
-    public String verboseToString() {
+    public String verboseToString(boolean autoCreateHeaders) {
        String headers = this.header;
-       if (this.entityBody != null && this.entityBody.length() > 0)
+       if (autoCreateHeaders && this.entityBody != null && this.entityBody.length() > 0 )
        {
             headers += "Content-Type: " + this.GetContentType() + "\r\n";
             headers += "Content-Length:" + this.entityBody.length() + "\r\n";

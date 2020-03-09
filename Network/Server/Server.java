@@ -55,7 +55,7 @@ public class Server {
 			return false;
 		}
 
-		System.out.println("--------------Testing port " + port);
+		System.out.println("--------------Listening on port " + port);
 		Socket s = null;
 		try {
 			s = new Socket("localhost", port);

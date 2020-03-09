@@ -28,26 +28,30 @@ public class ServerWorker implements Runnable {
     private String _path;
     private String _rootFolder;
     private ServerLock _locks;
+    private boolean _isVerbose;
 
-    public ServerWorker(ServerLock locks, String rootFolder, Socket socket)
+    public ServerWorker(ServerLock locks, String rootFolder, Socket socket, boolean isVerbose)
     {
         this._locks = locks;
         this._rootFolder = rootFolder.toLowerCase();
         this._socket = socket;
-        System.out.println("client connected");
-    }
+        this._isVerbose = isVerbose;
+        this.println("client connected");
+     }
 
     public void Process()
     {
         try {
+            this.println("starting to parse the request");
             PrintWriter out = new PrintWriter(this._socket.getOutputStream());
    
             Scanner in = new Scanner(this._socket.getInputStream());
             this.evaluateFirstline( in .nextLine());
             this.req.parseRequest( in );
-            System.out.println(this.req.toString());
+            this.println(this.req.toString());
  
             // process request
+            this.println("starting to process the request");
             this._response = new Response(this.req);
             this._path = this.req.getUrl();
             if (this.req.getMethod().equals("GET"))
@@ -60,13 +64,20 @@ public class ServerWorker implements Runnable {
             }
             
             // send response
-            System.out.println(this._response.verboseToString());
-            out.write(this._response.verboseToString());
+            this.println("--- Server Response ---");
+            this.println(this._response.verboseToString(true));
+            out.write(this._response.verboseToString(true));
             out.close();
-                
+            this.println("\n\n Waiting for new request");    
         } catch (Exception e) {
             //TODO: handle exception
         }
+    }
+
+    private void println(String message){
+        if (this._isVerbose) {
+            System.out.println(message);
+            }
     }
 
     private void evaluateFirstline(String content) {
@@ -87,6 +98,8 @@ public class ServerWorker implements Runnable {
         {
             return;
         }
+
+        this.println("processing GET");
         
         try {
            File f = new File(Paths.get(this._path).toAbsolutePath().normalize().toString());
@@ -118,6 +131,8 @@ public class ServerWorker implements Runnable {
 
     private void ProcessDirectory(File f)
     {
+        this.println("processing GET Directory content: " + this._path);
+ 
         File[] allfiles = f.listFiles();
         this._response.appendEntityBody("<html><body>");
         for (File file : allfiles) {
@@ -131,6 +146,8 @@ public class ServerWorker implements Runnable {
 
     private void ProcessFile(File f)
     {
+        this.println("processing GET File content: " + this._path);
+ 
         boolean locked = false;
         try {
             if (this._locks.CanRead(this._path)){
@@ -184,6 +201,7 @@ public class ServerWorker implements Runnable {
             return;
         }
         
+        this.println("processing POST: " + this._path);
         boolean locked = false;
         try {
            File f = new File(Paths.get(this._path).toAbsolutePath().normalize().toString());
@@ -198,6 +216,7 @@ public class ServerWorker implements Runnable {
                 locked = true;
                 if (f.exists() && f.isFile()){
                     if (f.canWrite()){
+                        this.println("Modifing existing file");
                         Files.write(Paths.get(this._path), this.req.getEntityBody().getBytes());
                         this._response.setCode("200");
                         this._response.setPhrase("OK");
@@ -208,11 +227,12 @@ public class ServerWorker implements Runnable {
                     }
                 }
                 else {
-                        Path p = Paths.get(this._path);
-                        this.EnsureDirectory(p.getParent());
-                        Files.write(p, this.req.getEntityBody().getBytes());
-                        this._response.setCode("201");
-                        this._response.setPhrase("Created");
+                    this.println("Creating new file");
+                    Path p = Paths.get(this._path);
+                    this.EnsureDirectory(p.getParent());
+                    Files.write(p, this.req.getEntityBody().getBytes());
+                    this._response.setCode("201");
+                    this._response.setPhrase("Created");
                 }
             } 
             else {
@@ -232,6 +252,7 @@ public class ServerWorker implements Runnable {
     }
 
     private boolean CheckPath(){
+        this.println("Checking path: " + this._path);
         if (this._path ==  null)
         {
             this._response.setCode("400");
@@ -241,6 +262,7 @@ public class ServerWorker implements Runnable {
 
         if (this._path.contains(".."))
         {
+            this.println("Path contains ..");
             this._response.setCode("403");
             this._response.setPhrase("Forbidden");
             return false;
@@ -251,6 +273,7 @@ public class ServerWorker implements Runnable {
         Path p = Paths.get(this._path);
         if (p.isAbsolute())
         {
+            this.println("Absolute paths are not allowed.");
             this._response.setCode("403");
             this._response.setPhrase("Forbidden");
             return false;
@@ -263,6 +286,7 @@ public class ServerWorker implements Runnable {
             this._path = this._rootFolder + "\\" + this._path;
         }
 
+        this.println("Path resolved to: " + this._path);
         return true;
     }
 

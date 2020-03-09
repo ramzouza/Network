@@ -13,6 +13,24 @@ public class httpf {
     public static void main(String[] args) {
 //        args = new String[] { "-v" , "-p","200"};
 
+        for (int i = 0; i < args.length; i++) {
+            if (args[0].equals("help")) {
+                try {
+                    args[1] = args[1];
+                } 
+                catch (Exception e) {
+                    System.out.println(help(""));
+                    System.exit(0);
+                }
+                System.out.println(help(args[1]));
+                System.exit(0);
+            }
+            else {
+                
+            }
+        }
+
+
         initArgument(args);
         Server server = new Server(Integer.parseInt(parameter.getPort()), "localhost");
         server.initSocket();
@@ -20,7 +38,7 @@ public class httpf {
             Socket socket = server.accept();
             if (socket != null)
             {
-                ServerWorker worker = new ServerWorker(httpf.Locks, parameter.getPath(), socket);
+                ServerWorker worker = new ServerWorker(httpf.Locks, parameter.getPath(), socket, parameter.isVerbose());
                 Thread t = new Thread(worker);
                 t.start();
                 // worker.Process();
@@ -101,5 +119,16 @@ public class httpf {
         return false;
     }
 
+    public static String help(String temp) {
+        switch (temp) {
+        case "":
+            return "\n\nUsage: httpf [-v] [-p PORT] [-d PATH-TO-DIR] \n"  
+                    + "-v Prints debugging messages\n"
+                    + "-p Specifies the port number that the server will listen and serve at. Default is 8080\n"
+                    + "-d Specifies the directory that the server will use to read/write requested files. Default is the current directory when launching the application" ;
+        default:
+                    return " The help you are trying to get does not exist";    
+        }
+    }
 
 }
