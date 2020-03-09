@@ -1,16 +1,15 @@
 import java.io.File;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import Network.Server.ServerWorker;
+import Network.Server.ServerLock;
 
 import Network.Server.Server;
 
 public class httpf {
     static serverArgument parameter = new serverArgument();
     static String DefaultWorkingDirectory = "C:\\Github\\Network\\Network\\Files";
+    static ServerLock Locks = new ServerLock();
     public static void main(String[] args) {
 //        args = new String[] { "-v" , "-p","200"};
 
@@ -21,7 +20,7 @@ public class httpf {
             Socket socket = server.accept();
             if (socket != null)
             {
-                ServerWorker worker = new ServerWorker(parameter.getPath(), socket);
+                ServerWorker worker = new ServerWorker(httpf.Locks, parameter.getPath(), socket);
                 Thread t = new Thread(worker);
                 t.start();
                 // worker.Process();

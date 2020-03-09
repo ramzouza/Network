@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ import Network.Builder.GETRequestBuilder;
 import Network.Builder.POSTRequestBuilder;
 import Network.Builder.RequestBuilder;
 import Network.Client.Response;
+import Network.Server.ServerLock;
 
 
 public class ServerWorker implements Runnable {
@@ -25,10 +27,12 @@ public class ServerWorker implements Runnable {
     private Response _response;
     private String _path;
     private String _rootFolder;
+    private ServerLock _locks;
 
-    public ServerWorker(String rootFolder, Socket socket)
+    public ServerWorker(ServerLock locks, String rootFolder, Socket socket)
     {
-        this._rootFolder = rootFolder;
+        this._locks = locks;
+        this._rootFolder = rootFolder.toLowerCase();
         this._socket = socket;
         System.out.println("client connected");
     }
@@ -78,7 +82,7 @@ public class ServerWorker implements Runnable {
 	   req.setVersion(values[2]);
     }
 
-    public void executeGet() {
+    private void executeGet() {
         if (!this.CheckPath())
         {
             return;
@@ -95,27 +99,11 @@ public class ServerWorker implements Runnable {
 
            if (f.isDirectory())
            {
-               File[] allfiles = f.listFiles();
-               for (File file : allfiles) {
-                   this._response.appendEntityBody(file.getName());
-               }
-               this._response.setCode("200");
-               this._response.setPhrase("OK");
-            }
+               this.ProcessDirectory(f);
+           }
            else if (f.isFile())
            {
-               if (f.canRead())
-               {
-                    List<String> lines =  Files.readAllLines(Paths.get(this._path), StandardCharsets.UTF_8);
-                    this._response.setEntityBody(String.join(System.lineSeparator(), lines));          
-                    this._response.setCode("200");
-                    this._response.setPhrase("OK");
-                }
-                else
-                {
-                    this._response.setCode("403");
-                    this._response.setPhrase("Forbidden");
-                }
+               this.ProcessFile(f);
            }
            else
            {
@@ -128,12 +116,75 @@ public class ServerWorker implements Runnable {
         }
     }
 
-    public void executePost() {
+    private void ProcessDirectory(File f)
+    {
+        File[] allfiles = f.listFiles();
+        this._response.appendEntityBody("<html><body>");
+        for (File file : allfiles) {
+            this._response.appendEntityBody(this.getFileEntry(file));
+        }
+        this._response.appendEntityBody("</body></html>");
+        this._response.setFileName("list.html");
+        this._response.setCode("200");
+        this._response.setPhrase("OK");
+    }
+
+    private void ProcessFile(File f)
+    {
+        boolean locked = false;
+        try {
+            if (this._locks.CanRead(this._path)){
+                locked = true;
+                if (f.canRead()){
+                    this._response.setFileName(this._path);
+                    if (this._response.IsBinaryType()){
+                        byte[] data = Files.readAllBytes(Paths.get(this._path));
+                        this._response.setEntityBody(Base64.getEncoder().encodeToString(data));
+                    }
+                    else{
+                        List<String> lines =  Files.readAllLines(Paths.get(this._path), StandardCharsets.UTF_8);
+                        this._response.setEntityBody(String.join(System.lineSeparator(), lines)); 
+                    }
+                    this._response.setCode("200");
+                    this._response.setPhrase("OK");
+                }
+                else{
+                    this._response.setCode("403");
+                    this._response.setPhrase("Forbidden");
+                }
+            }
+            else{
+                this._response.setCode("403");
+                this._response.setPhrase("Forbidden-Locked");
+            }
+        } catch (Exception e) {
+            this._response.setCode("500");
+            this._response.setPhrase("Internal Server Error");
+        } finally{
+            if (locked){
+                this._locks.CompleteRead(this._path);
+            }
+        }
+    }
+
+    private String getFileEntry(File file)
+    {
+        String filePath = file.getAbsolutePath().toLowerCase();
+        if (filePath.startsWith(this._rootFolder))
+        {
+            filePath = filePath.substring(this._rootFolder.length());
+        }
+
+        return "<a href='" + filePath + "'>" + file.getName() + "</a></br>";
+    }
+
+    private void executePost() {
         if (!this.CheckPath())
         {
             return;
         }
         
+        boolean locked = false;
         try {
            File f = new File(Paths.get(this._path).toAbsolutePath().normalize().toString());
            if (f.isDirectory())
@@ -143,32 +194,41 @@ public class ServerWorker implements Runnable {
                return;
            }
 
-           if (f.exists() && f.isFile())
-           {
-               if (f.canWrite())
-               {
-                    Files.write(Paths.get(this._path), this.req.getEntityBody().getBytes());
-                    this._response.setCode("200");
-                    this._response.setPhrase("OK");
+            if (this._locks.CanWrite(this._path)){
+                locked = true;
+                if (f.exists() && f.isFile()){
+                    if (f.canWrite()){
+                        Files.write(Paths.get(this._path), this.req.getEntityBody().getBytes());
+                        this._response.setCode("200");
+                        this._response.setPhrase("OK");
+                    }
+                    else{
+                        this._response.setCode("403");
+                        this._response.setPhrase("Forbidden");
+                    }
                 }
-                else
-                {
-                    this._response.setCode("403");
-                    this._response.setPhrase("Forbidden");
+                else {
+                        Path p = Paths.get(this._path);
+                        this.EnsureDirectory(p.getParent());
+                        Files.write(p, this.req.getEntityBody().getBytes());
+                        this._response.setCode("201");
+                        this._response.setPhrase("Created");
                 }
-           }
-           else
-           {
-                Path p = Paths.get(this._path);
-                this.EnsureDirectory(p.getParent());
-                Files.write(p, this.req.getEntityBody().getBytes());
-                this._response.setCode("201");
-                this._response.setPhrase("Created");
-           }
+            } 
+            else {
+                this._response.setCode("403");
+                this._response.setPhrase("Forbidden-Locked");
+            }
         } catch (Exception e) {
             this._response.setCode("500");
             this._response.setPhrase("Internal Server Error");
         }
+        finally{
+            if (locked){
+                this._locks.CompleteWrite(this._path);
+            }
+        }
+
     }
 
     private boolean CheckPath(){
