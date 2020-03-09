@@ -129,7 +129,6 @@ public class ServerWorker {
         }
     }
 
-
     public void executePost() {
         if (!this.CheckPath())
         {
@@ -161,7 +160,9 @@ public class ServerWorker {
            }
            else
            {
-                Files.write(Paths.get(this._path), this.req.getEntityBody().getBytes());
+                Path p = Paths.get(this._path);
+                this.EnsureDirectory(p.getParent());
+                Files.write(p, this.req.getEntityBody().getBytes());
                 this._response.setCode("200");
                 this._response.setPhrase("OK");
            }
@@ -206,5 +207,18 @@ public class ServerWorker {
         return true;
     }
 
+    public void EnsureDirectory(Path p)
+    {
+        if (p == null)
+        {
+            return;
+        }
 
+        File f =  new File(p.toAbsolutePath().normalize().toString());
+        if (!f.exists())
+        {
+            this.EnsureDirectory(p.getParent());
+            f.mkdir();
+        }
+    }
 }

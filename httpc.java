@@ -15,8 +15,9 @@ public class httpc {
     static Argument parameter = new Argument();
 
     public static void main(String[] args) {     
-      args = new String[] { "POST" , "-h", "Content-Length:12", "-d", "Hello world!" , "http://localhost:8080/bob.txt"};
-        for (int i = 0; i < args.length; i++) {
+//      args = new String[] { "POST" , "-h", "Content-Length:12", "-d", "Hello world!" , "http://localhost:8080/bob.txt"};
+//      args = new String[] { "GET" , "http://httpbin.org/get?course=networking&assignment=1"};
+for (int i = 0; i < args.length; i++) {
             if (args[0].equals("help")) {
                 try {
                     args[1] = args[1];

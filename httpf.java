@@ -10,7 +10,7 @@ import Network.Server.Server;
 
 public class httpf {
     static serverArgument parameter = new serverArgument();
-    static String WorkingDirectory = "C:\\Github\\Network\\Network\\Files";
+    static String DefaultWorkingDirectory = "C:\\Github\\Network\\Network\\Files";
     public static void main(String[] args) {
 //        args = new String[] { "-v" , "-p","200"};
 
@@ -21,7 +21,7 @@ public class httpf {
             Socket socket = server.accept();
             if (socket != null)
             {
-                ServerWorker worker = new ServerWorker(httpf.WorkingDirectory, socket);
+                ServerWorker worker = new ServerWorker(parameter.getPath(), socket);
                 worker.Process();
             }
         }
@@ -29,12 +29,17 @@ public class httpf {
     }
 
     public static void initArgument(String[] args) {
+
+        parameter.setPath(httpf.DefaultWorkingDirectory);
+
         if (contains(args, "-v")) {
             parameter.setVerbose(true);
         }
+
         if(contains(args, "-p")){
             setPort(args);
         }
+
         if(contains(args, "-d")){
             setPath(args);
             if (!isSecure()) {
@@ -68,8 +73,11 @@ public class httpf {
         for (int i = 0; i < arguments.length; i++) {
             if (arguments[i].equalsIgnoreCase("-d")) {
                 parameter.setPath(arguments[i + 1]);
+                return;
             }
         }
+
+        parameter.setPath(httpf.DefaultWorkingDirectory);
     }
 
     private static void setPort(String[] arguments) {

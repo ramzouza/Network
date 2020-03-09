@@ -49,7 +49,7 @@ public class Client {
             System.exit(0);
           }
      
-          if (port == 0)
+          if (port <= 0)
           {
               port = 80;
           }
@@ -87,10 +87,10 @@ public class Client {
         {
                 res.setHeader(header);
                 while ( in .hasNextLine()) {
-                    return;
-                   // entity += (String)in.nextLine() + "\r\n";
-                   }
-                   res.setEntityBody(entity);
+                    entity += (String)in.nextLine() + "\r\n";
+                }
+                
+                res.setEntityBody(entity);
         }
         else{
             header += temp + "\r\n";

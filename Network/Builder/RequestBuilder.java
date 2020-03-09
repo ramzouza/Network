@@ -31,7 +31,7 @@ public abstract class RequestBuilder {
     }
     @Override
     public String toString() {
-        return this.getMethod() + " " + this.URL + " " + this.version + "\r\n" +  this.header + "\r\n" + this.entityBody + "\r\nABC\r\n";
+        return this.getMethod() + " " + this.URL + " " + this.version + "\r\n" +  this.header + "\r\n" + this.entityBody + "\r\n";
     }
 
     public void parseRequest(Scanner in){
