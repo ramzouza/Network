@@ -57,7 +57,7 @@ for (int i = 0; i < args.length; i++) {
         }
 
         if (parameter.isVerbose()) {
-            System.out.println(net.getRes().verboseToString());
+            System.out.println(net.getRes().verboseToString(false));
         } 
         else {
             System.out.println(net.getRes().toString());
