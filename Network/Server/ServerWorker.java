@@ -1,9 +1,9 @@
 package Network.Server;
 
 import java.io.File;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.lang.model.util.ElementScanner6;
 
 import Network.Builder.GETRequestBuilder;
 import Network.Builder.POSTRequestBuilder;
@@ -19,7 +18,7 @@ import Network.Builder.RequestBuilder;
 import Network.Client.Response;
 
 
-public class ServerWorker {
+public class ServerWorker implements Runnable {
 
     private Socket _socket;
     private RequestBuilder req;
@@ -163,8 +162,8 @@ public class ServerWorker {
                 Path p = Paths.get(this._path);
                 this.EnsureDirectory(p.getParent());
                 Files.write(p, this.req.getEntityBody().getBytes());
-                this._response.setCode("200");
-                this._response.setPhrase("OK");
+                this._response.setCode("201");
+                this._response.setPhrase("Created");
            }
         } catch (Exception e) {
             this._response.setCode("500");
@@ -172,7 +171,7 @@ public class ServerWorker {
         }
     }
 
-    public boolean CheckPath(){
+    private boolean CheckPath(){
         if (this._path ==  null)
         {
             this._response.setCode("400");
@@ -220,5 +219,10 @@ public class ServerWorker {
             this.EnsureDirectory(p.getParent());
             f.mkdir();
         }
+    }
+
+    @Override
+    public void run() {
+        this.Process();
     }
 }

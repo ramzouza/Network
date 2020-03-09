@@ -22,7 +22,9 @@ public class httpf {
             if (socket != null)
             {
                 ServerWorker worker = new ServerWorker(parameter.getPath(), socket);
-                worker.Process();
+                Thread t = new Thread(worker);
+                t.start();
+                // worker.Process();
             }
         }
 
