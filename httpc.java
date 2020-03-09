@@ -15,7 +15,7 @@ public class httpc {
     static Argument parameter = new Argument();
 
     public static void main(String[] args) {     
-       args = new String[] { "GET" , "http://localhost:8080/hey/my/name/is/bob.txt"};
+      args = new String[] { "POST" , "-h", "Content-Length:12", "-d", "Hello world!" , "http://localhost:8080/bob.txt"};
         for (int i = 0; i < args.length; i++) {
             if (args[0].equals("help")) {
                 try {

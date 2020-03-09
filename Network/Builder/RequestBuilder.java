@@ -31,13 +31,14 @@ public abstract class RequestBuilder {
     }
     @Override
     public String toString() {
-        return this.getMethod() + " " + this.URL + " " + this.version + "\r\n" +  this.header+ "\r\n" + this.entityBody;
+        return this.getMethod() + " " + this.URL + " " + this.version + "\r\n" +  this.header + "\r\n" + this.entityBody + "\r\nABC\r\n";
     }
 
-    public void buildRequest(Scanner in){
+    public void parseRequest(Scanner in){
        
         String header = "";
         String entity = "";
+        int contentLength = 0;
 
         while ( in .hasNextLine()) {
         String temp = (String)in.nextLine();   
@@ -45,13 +46,21 @@ public abstract class RequestBuilder {
         if (temp.equals(""))
         {
                 this.header = header;
-                while ( in .hasNextLine()) {
+                while ( in.hasNextLine()) {
                     entity += (String)in.nextLine() + "\r\n";
-                   }
-                   this.entityBody = entity;
+                    if (entity.length()>=contentLength)
+                    {
+                        this.entityBody = entity;
+                        return;
+                    }
+                }
         }
         else{
             header += temp + "\r\n";
+            if (temp.startsWith("Content-Length:"))
+            {
+                contentLength = Integer.parseInt(temp.substring(15).trim());
+            }
         }
         
        	
@@ -64,6 +73,10 @@ public abstract class RequestBuilder {
     public String getUrl()
     {
         return this.URL;
+    }
+
+    public String getEntityBody() {
+        return this.entityBody;
     }
 
 
@@ -79,4 +92,11 @@ public abstract class RequestBuilder {
         return this.version;
     }
 
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
 }

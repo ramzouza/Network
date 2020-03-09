@@ -1,6 +1,7 @@
 package Network.Server;
 
 import java.io.File;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -38,24 +39,27 @@ public class ServerWorker {
         try {
             PrintWriter out = new PrintWriter(this._socket.getOutputStream());
    
-            // parse incoming request
             Scanner in = new Scanner(this._socket.getInputStream());
             this.evaluateFirstline( in .nextLine());
-            this.req.buildRequest( in );
-
+            this.req.parseRequest( in );
+            System.out.println(this.req.toString());
+ 
             // process request
-            this._response = new Response(this.req.getVersion());
+            this._response = new Response(this.req);
             this._path = this.req.getUrl();
             if (this.req.getMethod().equals("GET"))
             {
                 this.executeGet();
+            }
+            else
+            {
+                this.executePost();
             }
             
             // send response
             System.out.println(this._response.verboseToString());
             out.write(this._response.verboseToString());
             out.close();
-            System.out.println(this.req.toString());
                 
         } catch (Exception e) {
             //TODO: handle exception
@@ -118,6 +122,48 @@ public class ServerWorker {
            {
                 this._response.setCode("400");
                 this._response.setPhrase("Bad Request");
+           }
+        } catch (Exception e) {
+            this._response.setCode("500");
+            this._response.setPhrase("Internal Server Error");
+        }
+    }
+
+
+    public void executePost() {
+        if (!this.CheckPath())
+        {
+            return;
+        }
+        
+        try {
+           File f = new File(Paths.get(this._path).toAbsolutePath().normalize().toString());
+           if (f.isDirectory())
+           {
+               this._response.setCode("400");
+               this._response.setPhrase("Bad Request");
+               return;
+           }
+
+           if (f.exists() && f.isFile())
+           {
+               if (f.canWrite())
+               {
+                    Files.write(Paths.get(this._path), this.req.getEntityBody().getBytes());
+                    this._response.setCode("200");
+                    this._response.setPhrase("OK");
+                }
+                else
+                {
+                    this._response.setCode("403");
+                    this._response.setPhrase("Forbidden");
+                }
+           }
+           else
+           {
+                Files.write(Paths.get(this._path), this.req.getEntityBody().getBytes());
+                this._response.setCode("200");
+                this._response.setPhrase("OK");
            }
         } catch (Exception e) {
             this._response.setCode("500");

@@ -27,30 +27,12 @@ public Boolean verifyRequest(){
 
     @Override
     public String toString() {
-        return "POST " + this.URL + " " + this.version + "\r\n" +  this.header+ "Content-Length: " +entityBody.length() +"\r\n\r\n" + this.entityBody;
-    } 
-    @Override
-    public void buildRequest(Scanner in){
-       
-        String header = "";
-        String entity = "";
 
-        while ( in .hasNextLine()) {
-        String temp = (String)in.nextLine();   
-      
-        if (temp.equals(""))
-        {
-                this.header = header;
-                while ( in .hasNextLine()) {
-                    entity += (String)in.nextLine() + "\r\n";
-                   }
-                   this.entityBody = entity;
-        }
-        else{
-            header += temp + "\r\n";
-        }
-        
-       	
-    }
-}
-}
+        String headers = this.header;
+        if (headers != null && !headers.contains("Content-Length:") && this.entityBody != null && this.entityBody.length() > 0 )
+          {
+            headers += "Content-Length: " + entityBody.length() + "\r\n";
+          }
+        return "POST " + this.URL + " " + this.version + "\r\n" +  headers +"\r\n" + this.entityBody + "\r\n";
+    } 
+ }

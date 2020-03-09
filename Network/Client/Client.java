@@ -56,13 +56,14 @@ public class Client {
 
         Socket sock = new Socket(web, port);
         PrintWriter out = new PrintWriter(sock.getOutputStream());
-        Scanner in = new Scanner(sock.getInputStream());
         out.write(req.toString());
         out.flush();
+        
 
+        Scanner in = new Scanner(sock.getInputStream());
         buildResponse(in);        
-        out.close(); in .close();
-        sock.close();
+        in.close();
+        out.close(); 
         redirect();
         } 
     catch (Exception e) {
@@ -94,6 +95,7 @@ public class Client {
         else{
             header += temp + "\r\n";
         }
+        
            
     }
    

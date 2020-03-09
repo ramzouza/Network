@@ -19,10 +19,9 @@ public class GETRequestBuilder extends RequestBuilder {
     }
 
     @Override
-    public void buildRequest(Scanner in){
+    public void parseRequest(Scanner in){
        
         String header = "";
-        String entity = "";
 
         while ( in .hasNextLine()) {
         String temp = (String)in.nextLine();   

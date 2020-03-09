@@ -1,5 +1,7 @@
 package Network.Client;
 
+import Network.Builder.RequestBuilder;
+
 public class Response {
     private String version;
     private String code;
@@ -7,11 +9,11 @@ public class Response {
     private String header;
     private String entityBody;
 
-    public Response(String version){
-        this.version = version;
+    public Response(RequestBuilder req){
+        this.version = req.getVersion();
         this.entityBody = "";
         this.phrase = "";
-        this.header = "";
+        this.header = req.getHeader();
     }
     
     public Response(String version, String code, String phrase, String header, String entityBody) {
@@ -23,8 +25,14 @@ public class Response {
     }
     
     public String verboseToString() {
-       
-        return this.version + " " + this.code + " " + this.phrase + "\r\n" +  this.header  + "\r\n" + entityBody ;
+       String headers = this.header;
+       if (this.entityBody != null && this.entityBody.length() > 0)
+       {
+            headers += "Content-Type: text" + "\r\n";
+            headers += "Content-Length:" + this.entityBody.length() + "\r\n";
+       }
+
+        return this.version + " " + this.code + " " + this.phrase + "\r\n" +  headers  + "\r\n" + entityBody ;
     }
 
     @Override
@@ -50,6 +58,10 @@ public class Response {
         this.header = header;
     }
 
+    public void appendHeader(String header) {
+        this.header += header;
+    }
+
     public String getEntityBody() {
         return entityBody;
     }
@@ -59,6 +71,11 @@ public class Response {
     }
 
     public void appendEntityBody(String entityBody) {
+        if (this.entityBody.length() > 0)
+        {
+            this.entityBody += "\r\n";
+        }
+
         this.entityBody += entityBody;
     }
 

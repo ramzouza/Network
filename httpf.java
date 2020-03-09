@@ -76,8 +76,11 @@ public class httpf {
         for (int i = 0; i < arguments.length; i++) {
             if (arguments[i].equalsIgnoreCase("-p")) {
                 parameter.setPort(arguments[i + 1]);
+                return;
             }
         }
+
+        parameter.setPort("8080");
     }
 
     public static Boolean contains(String[] arguments, String character) {
